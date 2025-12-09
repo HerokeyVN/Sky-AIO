@@ -352,10 +352,10 @@ const { intro, toolbox, tools } = useLandingPageViewModel()
     grid-template-columns: 1fr;
   }
 
-  .intro__actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.intro__actions {
+  flex-direction: column;
+  align-items: center;
+}
 
   .feature-band {
     grid-template-columns: 1fr;
