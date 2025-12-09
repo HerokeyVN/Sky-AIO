@@ -4,8 +4,18 @@ import { toolService } from '../services/toolService'
 import { useI18n, type LocaleKey } from '../i18n'
 import logo from '../assets/logo.png'
 
+const rawBase = import.meta.env.BASE_URL ?? '/'
+const normalizedBase = rawBase.endsWith('/') ? rawBase : `${rawBase}/`
+const resolveAppUrl = (path = '') => {
+  if (!path) return normalizedBase
+  if (path.startsWith('?') || path.startsWith('#')) {
+    return `${normalizedBase}${path}`
+  }
+  return `${normalizedBase}${path.replace(/^\/+/u, '')}`
+}
+
 const primaryNav = [
-  { id: 'about', labelKey: 'header.about', href: '/#about' },
+  { id: 'about', labelKey: 'header.about', target: '#about' },
   { id: 'requests', labelKey: 'header.feedback', href: 'https://forms.gle/', external: true },
 ]
 
@@ -16,7 +26,7 @@ const toolLinks = computed(() =>
     .map((tool) => ({
       id: tool.id,
       label: t(`tools.${tool.id}.name`, tool.name),
-      href: tool.externalUrl ?? `/?tool=${tool.id}`,
+      href: tool.externalUrl ?? resolveAppUrl(`?tool=${tool.id}`),
       external: Boolean(tool.externalUrl),
     }))
 )
@@ -94,7 +104,7 @@ function closeNav() {
 <template>
   <header class="site-header">
     <div class="site-header__bar">
-      <a href="/" class="brand">
+      <a :href="resolveAppUrl()" class="brand">
         <img class="brand__logo" :src="logo" alt="Sky Tools AIO logo" />
         <span class="brand__text">Sky Tools AIO</span>
       </a>
@@ -109,7 +119,7 @@ function closeNav() {
             v-for="item in primaryNav"
             :key="item.id"
             class="menu__link"
-            :href="item.href"
+            :href="item.external ? item.href : resolveAppUrl(item.target ?? '')"
             :target="item.external ? '_blank' : undefined"
             :rel="item.external ? 'noopener noreferrer' : undefined"
             @click="closeNav"

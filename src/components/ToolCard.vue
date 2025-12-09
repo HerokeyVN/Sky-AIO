@@ -20,7 +20,17 @@ const iconMap: Record<string, string> = {
 
 const resolveIcon = (icon?: string) => iconMap[icon ?? 'cloud'] ?? 'bi-cloud-fill'
 
-const getToolHref = (tool: Tool) => tool.externalUrl ?? `/?tool=${tool.id}`
+const rawBase = import.meta.env.BASE_URL ?? '/'
+const normalizedBase = rawBase.endsWith('/') ? rawBase : `${rawBase}/`
+const resolveAppUrl = (path = '') => {
+  if (!path) return normalizedBase
+  if (path.startsWith('?') || path.startsWith('#')) {
+    return `${normalizedBase}${path}`
+  }
+  return `${normalizedBase}${path.replace(/^\/+/u, '')}`
+}
+
+const getToolHref = (tool: Tool) => tool.externalUrl ?? resolveAppUrl(`?tool=${tool.id}`)
 
 const handleCtaClick = (event: MouseEvent, tool: Tool) => {
   if (tool.status !== 'available') {
