@@ -4,7 +4,7 @@ import SiteHeader from '../../components/SiteHeader.vue'
 import SiteFooter from '../../components/SiteFooter.vue'
 import { useLandingPageViewModel } from './viewmodels/landingPage.viewmodel'
 
-const { intro, toolbox, tools, insights } = useLandingPageViewModel()
+const { intro, toolbox, tools } = useLandingPageViewModel()
 </script>
 
 <template>

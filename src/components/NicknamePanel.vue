@@ -7,7 +7,7 @@ const nickname = ref('')
 const randomNames = ['Skylark', 'Sunwhisper', 'Dawnglow', 'Cloudstep', 'Starlit', 'Aurora', 'Kite', 'Halo']
 
 const randomizeNickname = () => {
-  const pick = randomNames[Math.floor(Math.random() * randomNames.length)]
+  const pick = randomNames[Math.floor(Math.random() * randomNames.length)] ?? ''
   nickname.value = pick
 }
 
