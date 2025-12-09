@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import { useI18n } from '../i18n'
 
+const rawBase = import.meta.env.BASE_URL ?? '/'
+const normalizedBase = rawBase.endsWith('/') ? rawBase : `${rawBase}/`
+const resolveAppUrl = (path = '') => {
+  if (!path) return normalizedBase
+  if (path.startsWith('?') || path.startsWith('#')) {
+    return `${normalizedBase}${path}`
+  }
+  return `${normalizedBase}${path.replace(/^\/+/u, '')}`
+}
+
 const { t } = useI18n()
 </script>
 
@@ -19,8 +29,8 @@ const { t } = useI18n()
       <div class="footer-block">
         <p class="footer-title">{{ t('footer.quickLinks') }}</p>
         <nav class="footer-nav">
-          <a href="/#top" class="footer-link">{{ t('footer.home') }}</a>
-          <a href="/#tools" class="footer-link">{{ t('footer.tools') }}</a>
+          <a :href="resolveAppUrl('#top')" class="footer-link">{{ t('footer.home') }}</a>
+          <a :href="resolveAppUrl('#tools')" class="footer-link">{{ t('footer.tools') }}</a>
           <a href="https://forms.gle/" target="_blank" rel="noopener noreferrer" class="footer-link">{{ t('footer.feedback') }}</a>
         </nav>
       </div>
