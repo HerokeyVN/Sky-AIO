@@ -1,0 +1,150 @@
+export default {
+  header: {
+    about: 'Giới thiệu',
+    feedback: 'Góp ý tính năng',
+    tools: 'Công cụ',
+    language: 'Ngôn ngữ',
+  },
+  landing: {
+    intro: {
+      kicker: 'Sky Tools AIO',
+      headlinePrimary: 'Một bộ công cụ đơn giản',
+      headlineSecondary: 'Nhưng hữu ích cho SkyKid',
+      subline: 'Các tiện ích hỗ trợ',
+      cta: 'Bắt đầu khám phá',
+    },
+    toolbox: {
+      kicker: 'Toolbox',
+      title: 'Kho công cụ có sẵn',
+      description: 'Các tiện ích cho SkyKid.',
+    },
+  },
+  tools: {
+    'qr-height': {
+      name: 'Đo chiều cao từ QR',
+      description: 'Tải ảnh hoặc dùng camera để đọc QR và hiển thị chiều cao nhanh chóng.',
+    },
+    'sheet-to-image': {
+      name: 'Sheet TXT → Hình ảnh',
+      description: 'Chuyển đổi định dạng sheet TXT sang hình ảnh (coming soon).',
+    },
+    skycheckscam: {
+      name: 'Sky Check Scam',
+      description: 'Nền tảng bảo vệ SkyKid khỏi scam/giao dịch gian lận.',
+    },
+    'sky-auto-piano': {
+      name: 'Sky Auto Piano',
+      description: 'Tự động chơi piano trong Sky từ file sheet, hỗ trợ long-press mode.',
+    },
+  },
+  tool: {
+    status: {
+      available: 'Sẵn sàng',
+      planned: 'Sắp ra mắt',
+    },
+    actions: {
+      open: 'Mở công cụ',
+      openExternal: 'Mở trang',
+      planned: 'Đang hoàn thiện',
+    },
+  },
+  measure: {
+    hero: {
+      kicker: 'Sky Tools AIO',
+      title: 'Công cụ đo chiều cao',
+      lede: 'Tải ảnh QR hoặc quét trực tiếp để lấy chiều cao nhanh chóng.',
+    },
+    upload: {
+      title: 'Upload QR code',
+      hint: 'Kéo thả ảnh QR hoặc sử dụng camera/link lấy từ mã QR',
+      dropTitle: 'Thả ảnh QR vào đây',
+      dropHint: 'PNG, JPG, WEBP · < 5MB',
+      delete: 'Xóa ảnh',
+      scanning: 'Đang quét…',
+      manualTitle: 'Dán link',
+      manualHint: 'Dán đường link bạn đã quét từ QR code',
+      decode: 'Giải mã',
+      statusEmpty: 'Chưa có dữ liệu',
+      cameraTitle: 'Quét bằng camera',
+      cameraHint: 'Giữ ổn định, hệ thống sẽ đọc tự động.',
+      openCamera: 'Mở camera',
+    },
+    instructions: {
+      title: 'Hướng dẫn lấy QR code',
+      noImage: 'Chưa có hình',
+      prev: 'Trước',
+      next: 'Tiếp',
+      steps: {
+        openSettings: {
+          title: 'Mở menu cài đặt',
+          description: 'Nhấn vào biểu tượng bánh răng ở góc phải phía trên màn hình để mở menu cài đặt trong game.',
+          step: 'Bước 1',
+          placeholder: 'Mở menu',
+          alt: 'Người chơi nhấn vào biểu tượng bánh răng ở góc phải để mở menu cài đặt',
+        },
+        openAccount: {
+          title: 'Mở giao diện Tài khoản',
+          description: 'Trong menu cài đặt, chọn mục “Tài khoản / Account” để mở trang quản lý tài khoản Sky của bạn.',
+          step: 'Bước 2',
+          placeholder: 'Tài khoản',
+          alt: 'Màn hình menu cài đặt với mục Tài khoản được khoanh tròn',
+        },
+        accountInfo: {
+          title: 'Kéo xuống để xem thông tin tài khoản',
+          description: 'Kéo danh sách xuống dưới cùng để hiện ra phần Thông tin Tài khoản (Account Information). Nhấn vào mục này để tiếp tục.',
+          step: 'Bước 3',
+          placeholder: 'Thông tin tài khoản',
+          alt: 'Giao diện tài khoản với phần Account Information ở cuối danh sách',
+        },
+        outfitQr: {
+          title: 'Tìm mục Trang phục QR Code',
+          description: 'Tại trang Thông tin Tài khoản. Hãy nhấn vào mục “Trang Phục QR Code / Outfit QR Code” được khoanh đỏ.',
+          step: 'Bước 4',
+          placeholder: 'Trang phục QR',
+          alt: 'Mục Trang Phục QR Code được khoanh đỏ trong danh sách lựa chọn',
+        },
+        showQr: {
+          title: 'Mã QR sẽ xuất hiện',
+          description: 'Màn hình sẽ hiển thị QR Code trang phục của bạn. Chụp lại màn hình để upload vào công cụ.',
+          step: 'Bước 5',
+          placeholder: 'QR Code',
+          alt: 'QR Code trang phục hiển thị trên màn hình',
+        },
+      },
+    },
+    actions: {
+      newMeasurement: 'Đo chiều cao SkyKid khác',
+    },
+    comparison: {
+      title: 'Mô phỏng chiều cao',
+      scale: 'Scale (raw)',
+      height: 'Height (raw)',
+    },
+    metrics: {
+      title: 'Thông tin',
+      extra: 'Thông tin khác',
+      advanced: 'Thông tin nâng cao',
+    },
+    respect: {
+      title: 'Nguồn tham khảo',
+      description:
+        'Công cụ có tham khảo 1 số dữ liệu và thuật toán từ Sky Kid Height và Sky COTL Height Tool. Xin cảm ơn cộng đồng đã chia sẻ.',
+      linkSkyKidHeight: 'skykidheight.com',
+      linkCotlHeight: 'Sky COTL Height Tool',
+    },
+  },
+  footer: {
+    introTitle: 'Sky Tools AIO',
+    introText1: 'Bộ công cụ giúp SkyKid trải nghiệm game tốt hơn.',
+    introText2: 'Cảm ơn cộng đồng đã góp ý và thử nghiệm các tính năng mới.',
+    quickLinks: 'Liên kết nhanh',
+    home: 'Trang chủ',
+    tools: 'Danh sách công cụ',
+    feedback: 'Góp ý',
+    community: 'Cộng đồng',
+    discord: 'Discord Server',
+    facebook: 'Facebook Group',
+    contact: 'Liên hệ',
+    copyright: '© 2025 Sky Tools AIO. Tạo bởi HerokeyVN. Không liên kết với thatgamecompany.',
+  },
+}
