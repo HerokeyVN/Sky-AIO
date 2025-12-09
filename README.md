@@ -9,7 +9,7 @@ Sky Tools AIO is a lightweight toolkit for the SkyKid community. The app is buil
 - **Sheet TXT -> Image**: coming soon.
 
 ## Local development
-- Requirements: Node.js 18+ and pnpm (reference version in `package.json`: `pnpm@10.22.0`).
+- Requirements: Node.js 18+ and pnpm.
 - Install deps: `pnpm install`
 - Run dev server: `pnpm dev`
 - Production build: `pnpm build`
