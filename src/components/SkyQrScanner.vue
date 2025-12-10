@@ -1,20 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-
-type Html5QrcodeType = {
-	new (elementId: string, verbose?: boolean): Html5QrcodeInstance
-}
-
-interface Html5QrcodeInstance {
-	start(
-		cameraConfig: { facingMode: string } | { deviceId: { exact: string } },
-		config: { fps: number; qrbox: { width: number; height: number } },
-		onSuccess: (decodedText: string) => void,
-		onError: (errorMessage: string) => void
-	): Promise<void>
-	stop(): Promise<void>
-	clear(): Promise<void>
-}
+import QrScanner from 'qr-scanner'
 
 const emit = defineEmits<{
 	(event: 'decoded', value: string): void
@@ -22,9 +8,9 @@ const emit = defineEmits<{
 	(event: 'close'): void
 }>()
 
-const scannerId = `qr-scanner-${Math.random().toString(36).slice(2)}`
+const videoRef = ref<HTMLVideoElement | null>(null)
+const scanner = ref<QrScanner | null>(null)
 const statusMessage = ref('Đang khởi động camera...')
-const html5QrCode = ref<Html5QrcodeInstance | null>(null)
 
 onMounted(async () => {
 	if (typeof window === 'undefined') {
@@ -33,16 +19,23 @@ onMounted(async () => {
 	}
 
 	try {
-		const { Html5Qrcode } = (await import('html5-qrcode')) as unknown as { Html5Qrcode: Html5QrcodeType }
-		const instance = new Html5Qrcode(scannerId)
-		html5QrCode.value = instance
-		statusMessage.value = 'Đang tìm mã QR...'
-		await instance.start(
-			{ facingMode: 'environment' },
-			{ fps: 10, qrbox: { width: 250, height: 250 } },
+		const video = videoRef.value
+		if (!video) {
+			throw new Error('Không tìm thấy video element.')
+		}
+		const instance = new QrScanner(
+			video,
 			handleSuccess,
-			handleScanError
+			{
+				preferredCamera: 'environment',
+				maxScansPerSecond: 8,
+				returnDetailedScanResult: true,
+				highlightScanRegion: true,
+			}
 		)
+		scanner.value = instance
+		statusMessage.value = 'Đang tìm mã QR...'
+		await instance.start()
 	} catch (error) {
 		statusMessage.value = 'Không thể truy cập camera.'
 		emit('error', error instanceof Error ? error.message : 'Camera unavailable')
@@ -54,25 +47,22 @@ onBeforeUnmount(() => {
 })
 
 async function stopScanner() {
-	const instance = html5QrCode.value
+	const instance = scanner.value
 	if (!instance) return
-	html5QrCode.value = null
+	scanner.value = null
 	try {
 		await instance.stop()
-		await instance.clear()
+		await instance.destroy()
 	} catch (_error) {
 		// ignore cleanup issues
 	}
 }
 
-function handleSuccess(decodedText: string) {
-	emit('decoded', decodedText)
+function handleSuccess(result: string | { data: string }) {
+	const text = typeof result === 'string' ? result : result.data
+	emit('decoded', text)
 	statusMessage.value = 'Đã đọc được mã, đang dừng camera...'
 	stopScanner()
-}
-
-function handleScanError(_message: string) {
-	statusMessage.value = 'Không thấy mã, hãy giữ camera ổn định...'
 }
 
 async function closeScanner() {
@@ -83,7 +73,7 @@ async function closeScanner() {
 
 <template>
 	<div class="qr-scanner">
-		<div :id="scannerId" class="qr-scanner__viewport"></div>
+		<video ref="videoRef" class="qr-scanner__viewport" playsinline muted></video>
 		<p class="qr-scanner__status">{{ statusMessage }}</p>
 		<button type="button" class="btn" @click="closeScanner">Đóng</button>
 	</div>
@@ -105,6 +95,7 @@ async function closeScanner() {
 	border: 2px solid rgba(255, 255, 255, 0.25);
 	overflow: hidden;
 	background: rgba(5, 10, 18, 0.85);
+	object-fit: cover;
 }
 
 .qr-scanner__status {
