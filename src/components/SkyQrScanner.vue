@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import QrScanner from 'qr-scanner'
+import { useI18n } from '../i18n'
 
 const emit = defineEmits<{
 	(event: 'decoded', value: string): void
@@ -10,18 +11,20 @@ const emit = defineEmits<{
 
 const videoRef = ref<HTMLVideoElement | null>(null)
 const scanner = ref<QrScanner | null>(null)
-const statusMessage = ref('Đang khởi động camera...')
+const statusMessage = ref('')
+const { t } = useI18n()
 
 onMounted(async () => {
 	if (typeof window === 'undefined') {
-		statusMessage.value = 'Trình duyệt không hỗ trợ camera.'
+		statusMessage.value = t('scanner.status.unsupported')
 		return
 	}
 
+	statusMessage.value = t('scanner.status.starting')
 	try {
 		const video = videoRef.value
 		if (!video) {
-			throw new Error('Không tìm thấy video element.')
+			throw new Error(t('scanner.status.videoMissing'))
 		}
 		const instance = new QrScanner(
 			video,
@@ -34,11 +37,11 @@ onMounted(async () => {
 			}
 		)
 		scanner.value = instance
-		statusMessage.value = 'Đang tìm mã QR...'
+		statusMessage.value = t('scanner.status.scanning')
 		await instance.start()
 	} catch (error) {
-		statusMessage.value = 'Không thể truy cập camera.'
-		emit('error', error instanceof Error ? error.message : 'Camera unavailable')
+		statusMessage.value = t('scanner.status.cameraError')
+		emit('error', error instanceof Error ? error.message : t('scanner.status.cameraUnavailable'))
 	}
 })
 
@@ -53,15 +56,13 @@ async function stopScanner() {
 	try {
 		await instance.stop()
 		await instance.destroy()
-	} catch (_error) {
-		// ignore cleanup issues
-	}
+	} catch (_error) {}
 }
 
 function handleSuccess(result: string | { data: string }) {
 	const text = typeof result === 'string' ? result : result.data
 	emit('decoded', text)
-	statusMessage.value = 'Đã đọc được mã, đang dừng camera...'
+	statusMessage.value = t('scanner.status.found')
 	stopScanner()
 }
 
@@ -75,7 +76,7 @@ async function closeScanner() {
 	<div class="qr-scanner">
 		<video ref="videoRef" class="qr-scanner__viewport" playsinline muted></video>
 		<p class="qr-scanner__status">{{ statusMessage }}</p>
-		<button type="button" class="btn" @click="closeScanner">Đóng</button>
+		<button type="button" class="btn" @click="closeScanner">{{ t('scanner.actions.close') }}</button>
 	</div>
 </template>
 

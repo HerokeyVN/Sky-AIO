@@ -129,10 +129,10 @@ export function useMeasuringHeightViewModel() {
 	const activeSlideIndex = ref(0)
 	const fallbackSlide: InstructionSlide = {
 		id: 'placeholder',
-		title: 'Chưa có slide',
-		description: 'Vui lòng thêm nội dung hướng dẫn.',
-		step: 'Bước ?',
-		placeholderLabel: 'Không có dữ liệu',
+		title: t('measure.instructions.fallback.title', 'No slide yet'),
+		description: t('measure.instructions.fallback.description', 'Please add instruction content.'),
+		step: t('measure.instructions.fallback.step', 'Step ?'),
+		placeholderLabel: t('measure.instructions.fallback.placeholder', 'No data'),
 	}
 
 	const currentSlide = computed<InstructionSlide>(() => {
@@ -165,28 +165,28 @@ export function useMeasuringHeightViewModel() {
 			title: t('measure.metrics.title'),
 			defaultOpen: true,
 			metrics: [
-				{ id: 'height', label: 'Height', value: formatMeters(currentHeightMeters.value, 3) },
-				{ id: 'size-type', label: 'Size', value: `${sizeType.value}` },
+				{ id: 'height', label: t('measure.metrics.labels.height'), value: formatMeters(currentHeightMeters.value, 3) },
+				{ id: 'size-type', label: t('measure.metrics.labels.sizeType'), value: `${sizeType.value}` },
 			],
 		},
 		{
 			id: 'extra',
 			title: t('measure.metrics.extra', 'Thông tin khác'),
 			metrics: [
-				{ id: 'height-max', label: 'Height max', value: formatMeters(maxSnapshot.value.height, 3) },
-				{ id: 'size-type-max', label: 'Maximum account size', value: `${maxSnapshot.value.sizeType}` },
-				{ id: 'height-min', label: 'Height min', value: formatMeters(minSnapshot.value.height, 3) },
-				{ id: 'size-type-min', label: 'Minimum account size', value: `${minSnapshot.value.sizeType}` },
+				{ id: 'height-max', label: t('measure.metrics.labels.heightMax'), value: formatMeters(maxSnapshot.value.height, 3) },
+				{ id: 'size-type-max', label: t('measure.metrics.labels.sizeTypeMax'), value: `${maxSnapshot.value.sizeType}` },
+				{ id: 'height-min', label: t('measure.metrics.labels.heightMin'), value: formatMeters(minSnapshot.value.height, 3) },
+				{ id: 'size-type-min', label: t('measure.metrics.labels.sizeTypeMin'), value: `${minSnapshot.value.sizeType}` },
 			],
 		},
 		{
 			id: 'advanced',
 			title: t('measure.metrics.advanced', 'Thông tin nâng cao'),
 			metrics: [
-				{ id: 'scale', label: 'Scale raw', value: comparisonScale.value.toString() },
-				{ id: 'height-raw', label: 'Height raw', value: bodyHeightDelta.value.toString() },
-				{ id: 'base-height', label: 'Base height', value: formatMeters(baseHeightMeters.value, 3) },
-				{ id: 'final-factor', label: 'Final factor', value: `${finalScaleFactor.value.toFixed(3)}x` },
+				{ id: 'scale', label: t('measure.metrics.labels.scaleRaw'), value: comparisonScale.value.toString() },
+				{ id: 'height-raw', label: t('measure.metrics.labels.heightRaw'), value: bodyHeightDelta.value.toString() },
+				{ id: 'base-height', label: t('measure.metrics.labels.baseHeight'), value: formatMeters(baseHeightMeters.value, 3) },
+				{ id: 'final-factor', label: t('measure.metrics.labels.finalFactor'), value: `${finalScaleFactor.value.toFixed(3)}x` },
 			],
 		},
 	])
@@ -203,11 +203,11 @@ export function useMeasuringHeightViewModel() {
 		resetQrSelection()
 	}
 
-function parseQrPayload(rawInput?: string) {
-	const source = (rawInput ?? qrRawInput.value).trim()
-	if (!source) {
-		qrParseError.value = 'Vui lòng dán chuỗi hoặc link QR trước khi giải mã.'
-		lastDecodedPayload.value = null
+	function parseQrPayload(rawInput?: string) {
+		const source = (rawInput ?? qrRawInput.value).trim()
+		if (!source) {
+			qrParseError.value = t('measure.errors.emptyInput')
+			lastDecodedPayload.value = null
 			return null
 		}
 
@@ -222,7 +222,7 @@ function parseQrPayload(rawInput?: string) {
 			}
 			return lastDecodedPayload.value
 		} catch (error) {
-			qrParseError.value = error instanceof Error ? error.message : 'Không thể giải mã QR.'
+			qrParseError.value = t('measure.errors.decodeFail')
 			lastDecodedPayload.value = null
 			return null
 		}
@@ -247,7 +247,7 @@ function parseQrPayload(rawInput?: string) {
 			qrRawInput.value = rawText
 			parseQrPayload(rawText)
 		} catch (error) {
-			qrParseError.value = error instanceof Error ? error.message : 'Không đọc được QR từ ảnh.'
+			qrParseError.value = t('measure.errors.imageDecodeFail')
 			lastDecodedPayload.value = null
 		} finally {
 			isImageScanning.value = false

@@ -111,6 +111,12 @@ export default {
           alt: 'QR Code trang phục hiển thị trên màn hình',
         },
       },
+      fallback: {
+        title: 'Chưa có slide',
+        description: 'Vui lòng thêm nội dung hướng dẫn.',
+        step: 'Bước ?',
+        placeholder: 'Không có dữ liệu',
+      },
     },
     actions: {
       newMeasurement: 'Đo chiều cao SkyKid khác',
@@ -124,6 +130,18 @@ export default {
       title: 'Thông tin',
       extra: 'Thông tin khác',
       advanced: 'Thông tin nâng cao',
+      labels: {
+        height: 'Chiều cao',
+        sizeType: 'Kích cỡ',
+        heightMax: 'Chiều cao tối đa',
+        sizeTypeMax: 'Kích cỡ tối đa',
+        heightMin: 'Chiều cao tối thiểu',
+        sizeTypeMin: 'Kích cỡ tối thiểu',
+        scaleRaw: 'Scale thô',
+        heightRaw: 'Height thô',
+        baseHeight: 'Chiều cao cơ sở',
+        finalFactor: 'Hệ số cuối',
+      },
     },
     respect: {
       title: 'Nguồn tham khảo',
@@ -131,6 +149,11 @@ export default {
         'Công cụ có tham khảo 1 số dữ liệu và thuật toán từ Sky Kid Height và Sky COTL Height Tool. Xin cảm ơn cộng đồng đã chia sẻ.',
       linkSkyKidHeight: 'skykidheight.com',
       linkCotlHeight: 'Sky COTL Height Tool',
+    },
+    errors: {
+      emptyInput: 'Vui lòng dán chuỗi hoặc link QR trước khi giải mã.',
+      decodeFail: 'Không thể giải mã QR.',
+      imageDecodeFail: 'Không đọc được QR từ ảnh.',
     },
   },
   footer: {
@@ -146,5 +169,22 @@ export default {
     facebook: 'Facebook Group',
     contact: 'Liên hệ',
     copyright: '© 2025 Sky Tools AIO. Tạo bởi HerokeyVN. Không liên kết với thatgamecompany.',
+  },
+  scanner: {
+    status: {
+      unsupported: 'Trình duyệt không hỗ trợ camera.',
+      starting: 'Đang khởi động camera...',
+      scanning: 'Đang tìm mã QR...',
+      found: 'Đã đọc được mã, đang dừng camera...',
+      cameraError: 'Không thể truy cập camera.',
+      cameraUnavailable: 'Camera unavailable',
+      videoMissing: 'Không tìm thấy phần tử video.',
+      capturing: 'Đang chụp khung để thử lại...',
+      captureFail: 'Không tạo được ảnh từ camera.',
+      captureNoDecode: 'Ảnh chụp chưa đọc được, hãy tiến sát và giữ ổn định.',
+    },
+    actions: {
+      close: 'Đóng',
+    },
   },
 }
