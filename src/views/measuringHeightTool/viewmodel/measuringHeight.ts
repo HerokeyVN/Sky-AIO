@@ -166,7 +166,7 @@ export function useMeasuringHeightViewModel() {
 			defaultOpen: true,
 			metrics: [
 				{ id: 'height', label: 'Height', value: formatMeters(currentHeightMeters.value, 3) },
-				{ id: 'size-type', label: 'Size type', value: `${sizeType.value}` },
+				{ id: 'size-type', label: 'Size', value: `${sizeType.value}` },
 			],
 		},
 		{
@@ -174,9 +174,9 @@ export function useMeasuringHeightViewModel() {
 			title: t('measure.metrics.extra', 'Thông tin khác'),
 			metrics: [
 				{ id: 'height-max', label: 'Height max', value: formatMeters(maxSnapshot.value.height, 3) },
-				{ id: 'size-type-max', label: 'Size type max', value: `${maxSnapshot.value.sizeType}` },
+				{ id: 'size-type-max', label: 'Maximum account size', value: `${maxSnapshot.value.sizeType}` },
 				{ id: 'height-min', label: 'Height min', value: formatMeters(minSnapshot.value.height, 3) },
-				{ id: 'size-type-min', label: 'Size type min', value: `${minSnapshot.value.sizeType}` },
+				{ id: 'size-type-min', label: 'Minimum account size', value: `${minSnapshot.value.sizeType}` },
 			],
 		},
 		{
