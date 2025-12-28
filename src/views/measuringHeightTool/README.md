@@ -15,10 +15,10 @@ This file documents how the QR Height tool derives its numbers. All logic lives 
 ## Formula details
 Constants:
 ```
-A = 1.066904821
-B = 0.005692821
-C = 0.492501207
-D = 0.003192728
+A = 1.388503101,
+B = 0.016341944,
+C = 0.497115158,
+D = 0.004918536,
 SKY_REFERENCE_HEIGHT_M = 1
 SHORTEST_HEIGHT_M = 0.8
 TALLEST_HEIGHT_M = 1.2
