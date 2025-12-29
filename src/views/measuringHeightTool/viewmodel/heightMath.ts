@@ -2,10 +2,17 @@ export const HEIGHT_MOD_MAX_SAMPLE = 2
 export const HEIGHT_MOD_MIN_SAMPLE = -2
 
 const ratioCoefficients = {
-  A: 1.363106490,
-  B: 0.013580131,
-  C: 0.496705548,
-  D: 0.004542925,
+  A: 1.095388425,
+  B: 0.004983453,
+  C: 0.492141518,
+  D: 0.002968009,
+}
+
+const ratioCoefficients2 = {
+  A: 1.224206561,
+  B: 0.012636310,
+  C: 0.495569563,
+  D: 0.004517799,
 }
 
 const SIZE_TYPE_MIN = 1
@@ -46,17 +53,22 @@ export function formatMeters(value: number, precision = 2) {
 }
 
 function calcFinalFactor(scaleValue: number, heightValue: number) {
-	const ratio = predictRatio(scaleValue, heightValue)
-	const baseRatio = predictRatio(0, 0)
+	const coefficients = pickRatioCoefficients(heightValue)
+	const ratio = predictRatio(scaleValue, heightValue, coefficients)
+	const baseRatio = predictRatio(0, 0, coefficients)
 	if (!baseRatio) return 1
 	return ratio / baseRatio
 }
 
-function predictRatio(scaleValue: number, heightValue: number) {
+function predictRatio(scaleValue: number, heightValue: number, coefficients = pickRatioCoefficients(heightValue)) {
 	const adjustedHeight = heightValue * 10
 	const s = scaleComponent(scaleValue)
-	const { A, B, C, D } = ratioCoefficients
+	const { A, B, C, D } = coefficients
 	return A + B * adjustedHeight + C * s + D * (adjustedHeight * s)
+}
+
+function pickRatioCoefficients(heightValue: number) {
+	return heightValue < 0 ? ratioCoefficients2 : ratioCoefficients
 }
 
 function scaleComponent(scaleValue: number) {

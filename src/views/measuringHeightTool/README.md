@@ -13,12 +13,20 @@ This file documents how the QR Height tool derives its numbers. All logic lives 
    - `heightDelta` (final - base)
 
 ## Formula details
-Constants:
+Constants (dual coefficient sets, chosen by `heightMod` sign):
 ```
-A = 1.388503101,
-B = 0.016341944,
-C = 0.497115158,
-D = 0.004918536,
+ratioCoefficients (heightMod >= 0)
+   A = 1.095388425
+   B = 0.004983453
+   C = 0.492141518
+   D = 0.002968009
+
+ratioCoefficients2 (heightMod < 0)
+   A = 1.224206561
+   B = 0.012636310
+   C = 0.495569563
+   D = 0.004517799
+
 SKY_REFERENCE_HEIGHT_M = 1
 SHORTEST_HEIGHT_M = 0.8
 TALLEST_HEIGHT_M = 1.2
@@ -40,12 +48,13 @@ scaleComponent(s) = s >= 0 ? (1 + s) : 1 / (1 - s)
 ```
 H = heightMod * 10            // amplify heightMod for the model
 S = scaleComponent(scale)
-ratio = A + B*H + C*S + D*(H*S)
+coeffs = heightMod < 0 ? ratioCoefficients2 : ratioCoefficients
+ratio = A + B*H + C*S + D*(H*S)   // A,B,C,D from coeffs
 ```
 
 3) **Final scale factor**
 ```
-baseRatio = ratio when scale=0, heightMod=0
+baseRatio = ratio when scale=0, heightMod=0, using the same coeff set as the input heightMod
 factor = ratio / baseRatio
 referenceHeight = SKY_REFERENCE_HEIGHT_M * factor
 ```
