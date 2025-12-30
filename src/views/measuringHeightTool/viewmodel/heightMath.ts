@@ -2,10 +2,10 @@ export const HEIGHT_MOD_MAX_SAMPLE = 2
 export const HEIGHT_MOD_MIN_SAMPLE = -2
 
 const ratioCoefficients = {
-  A: 1.095388425,
-  B: 0.004983453,
-  C: 0.492141518,
-  D: 0.002968009,
+  A: 1.066904821,
+  B: 0.005692821,
+  C: 0.492501207,
+  D: 0.003192728
 }
 
 const ratioCoefficients2 = {
