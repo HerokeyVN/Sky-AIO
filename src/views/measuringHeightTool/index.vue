@@ -345,9 +345,6 @@ function handleStartNewMeasurement() {
         <a href="https://skykidheight.com/" target="_blank" rel="noopener noreferrer" class="respect__link">
           {{ t('measure.respect.linkSkyKidHeight') }}
         </a>
-        <a href="https://dream10325.github.io/sky-cotl-height-tool/" target="_blank" rel="noopener noreferrer" class="respect__link">
-          {{ t('measure.respect.linkCotlHeight') }}
-        </a>
       </div>
     </section>
   </main>

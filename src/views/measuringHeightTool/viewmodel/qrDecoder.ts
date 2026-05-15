@@ -86,15 +86,16 @@ function stripNoiseMarkers(payload: string) {
 }
 
 function parseDecodedPayload(decodedText: string, preferHeightKeyword: boolean) {
-	const printable = decodedText.replace(/[^\x20-\x7E]/g, '')
+	const sanitized = stripSpecialCharacters(decodedText)
+	const printable = sanitized.replace(/[^\x20-\x7E]/g, '')
 	const attempts: Array<() => DecodedSkyPayload | null> = []
 
 	if (preferHeightKeyword) {
-		attempts.push(() => parseViaHeightKeyword(decodedText))
+		attempts.push(() => parseViaHeightKeyword(sanitized))
 	}
 
-	attempts.push(() => parseViaAnchor(decodedText))
-	attempts.push(() => parseViaKeyHints(decodedText))
+	attempts.push(() => parseViaAnchor(sanitized))
+	attempts.push(() => parseViaKeyHints(sanitized))
 	if (!preferHeightKeyword) {
 		attempts.push(() => parseViaHeightKeyword(printable))
 	}
@@ -109,6 +110,10 @@ function parseDecodedPayload(decodedText: string, preferHeightKeyword: boolean) 
 	}
 
 	return null
+}
+
+function stripSpecialCharacters(input: string) {
+	return input.replace(/[^A-Za-z0-9":,\.\-]/g, '')
 }
 
 function parseViaHeightKeyword(text: string) {
