@@ -146,9 +146,8 @@ export default {
     respect: {
       title: 'Credits',
       description:
-        'The tool references some data and algorithms from Sky Kid Height and Sky COTL Height Tool. Thanks to the community for sharing.',
+        'The tool references some data and algorithms from Sky Kid Height. Thanks to the community for sharing.',
       linkSkyKidHeight: 'SkyKidHeight.com',
-      linkCotlHeight: 'Sky COTL Height Tool',
     },
     errors: {
       emptyInput: 'Please paste the QR string or link before decoding.',

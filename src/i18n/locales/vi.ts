@@ -146,9 +146,8 @@ export default {
     respect: {
       title: 'Nguồn tham khảo',
       description:
-        'Công cụ có tham khảo 1 số dữ liệu và thuật toán từ Sky Kid Height và Sky COTL Height Tool. Xin cảm ơn cộng đồng đã chia sẻ.',
+        'Công cụ có tham khảo 1 số dữ liệu và thuật toán từ Sky Kid Height. Xin cảm ơn cộng đồng đã chia sẻ.',
       linkSkyKidHeight: 'skykidheight.com',
-      linkCotlHeight: 'Sky COTL Height Tool',
     },
     errors: {
       emptyInput: 'Vui lòng dán chuỗi hoặc link QR trước khi giải mã.',

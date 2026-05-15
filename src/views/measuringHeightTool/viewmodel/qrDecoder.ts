@@ -6,7 +6,7 @@ export interface DecodedSkyPayload {
 export function decodeSkyQrPayload(rawText: string): DecodedSkyPayload {
 	const candidates = collectBase64Candidates(rawText)
 	if (!candidates.length) {
-		throw new Error('Không tìm thấy dữ liệu base64 trong QR.')
+		throw new Error('QR_NO_BASE64')
 	}
 
 	for (const candidate of candidates) {
@@ -17,6 +17,9 @@ export function decodeSkyQrPayload(rawText: string): DecodedSkyPayload {
 			const preferHeightKeyword = candidate.includes('ImJvZHki')
 			const parsed = parseDecodedPayload(decodedText, preferHeightKeyword)
 			if (parsed) {
+				if (isQrRangeInvalid(parsed)) {
+					throw new Error('QR_OUT_OF_RANGE')
+				}
 				return parsed
 			}
 		} catch (_error) {
@@ -24,7 +27,7 @@ export function decodeSkyQrPayload(rawText: string): DecodedSkyPayload {
 		}
 	}
 
-	throw new Error('Không thể xác định scale/height từ QR.')
+	throw new Error('QR_NOT_SUPPORT')
 }
 
 function collectBase64Candidates(rawText: string) {
@@ -316,7 +319,7 @@ function decodeBase64(payload: string) {
 		}
 	}
 
-	throw new Error('Không thể giải mã base64 trong môi trường hiện tại.')
+	throw new Error('QR_BASE64_UNSUPPORTED')
 }
 
 function normalizeBase64(payload: string) {
@@ -331,4 +334,8 @@ function tryParseUrl(candidate: string) {
 	} catch (_error) {
 		return null
 	}
+}
+
+function isQrRangeInvalid(payload: DecodedSkyPayload) {
+	return payload.scale > 2 || payload.scale < -2 || payload.height > 2 || payload.height < -2
 }
