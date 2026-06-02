@@ -189,7 +189,7 @@ function parseViaAnchor(text: string) {
 	}
 
 	const beforeS = text.slice(0, anchorIndex)
-	const height = pickLastNumeric(beforeS)
+	const height = pickSingleDigitFloat(beforeS)
 	if (scale === null || height === null) {
 		return null
 	}
@@ -256,38 +256,20 @@ function pickFirstNumeric(source: string) {
 	return null
 }
 
-function pickLastNumeric(source: string) {
-	const floatPattern = /(-?\d+\.\d+(?:[eE][-+]?\d+)?)/g
-	let floatMatch: RegExpExecArray | null
-	let lastFloat: number | null = null
-	while ((floatMatch = floatPattern.exec(source)) !== null) {
-		const raw = floatMatch[1]
-		if (typeof raw !== 'string') {
-			continue
-		}
-		const normalized = normalizeNumeric(raw)
-		if (normalized !== null) {
-			lastFloat = normalized
+function pickSingleDigitFloat(source: string) {
+	const pattern = /-?\d\.\d+(?:[eE][-+]?\d+)?/g
+	let match: RegExpExecArray | null
+	let lastRaw: string | null = null
+	while ((match = pattern.exec(source)) !== null) {
+		if (typeof match[0] === 'string') {
+			lastRaw = match[0]
 		}
 	}
-	if (lastFloat !== null) {
-		return lastFloat
+	if (!lastRaw) {
+		return null
 	}
-
-	const numPattern = /(-?\d+\.?\d*(?:[eE][-+]?\d+)?)/g
-	let numMatch: RegExpExecArray | null
-	let lastValue: number | null = null
-	while ((numMatch = numPattern.exec(source)) !== null) {
-		const raw = numMatch[1]
-		if (typeof raw !== 'string') {
-			continue
-		}
-		const normalized = normalizeNumeric(raw)
-		if (normalized !== null) {
-			lastValue = normalized
-		}
-	}
-	return lastValue
+	const value = Number.parseFloat(lastRaw)
+	return Number.isFinite(value) ? value : null
 }
 
 function normalizeNumeric(raw: string) {
