@@ -25,8 +25,8 @@ export default {
       description: 'Upload or scan a QR to get height quickly.',
     },
     'sheet-to-image': {
-      name: 'Sheet TXT → Image',
-      description: 'Convert TXT sheet format into an image (coming soon).',
+      name: 'Sky Sheet Store',
+      description: 'A Sky: Children of the Light music sheet library for discovering, uploading, practicing, and sharing songs.',
     },
     skycheckscam: {
       name: 'Sky Check Scam',

@@ -31,11 +31,12 @@ export class ToolService {
       },
       {
         id: 'sheet-to-image',
-        name: 'Sheet TXT → Hình ảnh',
-        description: 'Chuyển đổi định dạng sheet TXT thành hình ảnh cho SkyKid (coming soon).',
-        status: 'planned',
-        cta: 'Đang hoàn thiện',
+        name: 'Sky Sheet Store',
+        description: 'Thư viện sheet nhạc Sky: Children of the Light để tìm, tải lên, luyện tập và chia sẻ bản nhạc.',
+        status: 'available',
+        cta: 'Mở trang',
         icon: 'sheet',
+        externalUrl: 'https://skysheet.store/',
       }
     ]
   }

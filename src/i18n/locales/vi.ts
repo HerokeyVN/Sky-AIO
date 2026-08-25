@@ -25,8 +25,8 @@ export default {
       description: 'Tải ảnh hoặc dùng camera để đọc QR và hiển thị chiều cao nhanh chóng.',
     },
     'sheet-to-image': {
-      name: 'Sheet TXT → Hình ảnh',
-      description: 'Chuyển đổi định dạng sheet TXT sang hình ảnh (coming soon).',
+      name: 'Sky Sheet Store',
+      description: 'Thư viện sheet nhạc Sky: Children of the Light để tìm, tải lên, luyện tập và chia sẻ bản nhạc.',
     },
     skycheckscam: {
       name: 'Sky Check Scam',
