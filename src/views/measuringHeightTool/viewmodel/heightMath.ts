@@ -28,6 +28,7 @@ const OLD_SCALE_BUCKETS = 13.5
 export interface HeightSnapshot {
 	factor: number
 	sizeType: number
+	displaySizeType: number
 	baseHeight: number
 	height: number
 	heightDelta: number
@@ -42,6 +43,7 @@ export function computeHeightSnapshot(scaleValue: number, heightModValue: number
 	return {
 		factor,
 		sizeType: derivedSizeType,
+		displaySizeType: computeDisplaySizeType(scaleValue, heightModValue),
 		baseHeight,
 		height: absoluteHeight,
 		heightDelta: absoluteHeight - baseHeight,
@@ -50,6 +52,14 @@ export function computeHeightSnapshot(scaleValue: number, heightModValue: number
 
 export function formatMeters(value: number, precision = 2) {
 	return `${value.toFixed(precision)} m`
+}
+
+export function formatSizeType(value: number, precision = 2) {
+	return value.toFixed(precision)
+}
+
+export function computeDisplaySizeType(scaleValue: number, heightModValue: number) {
+	return 7.6 - (8.3 * scaleValue) - (3 * heightModValue)
 }
 
 function calcFinalFactor(scaleValue: number, heightValue: number) {

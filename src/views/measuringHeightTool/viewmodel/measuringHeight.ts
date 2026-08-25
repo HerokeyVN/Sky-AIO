@@ -1,7 +1,13 @@
 import { computed, ref } from 'vue'
 import { decodeSkyQrPayload } from './qrDecoder'
 import { scanImageFile } from './qrImageScanner'
-import { computeHeightSnapshot, formatMeters, HEIGHT_MOD_MAX_SAMPLE, HEIGHT_MOD_MIN_SAMPLE } from './heightMath'
+import {
+	computeHeightSnapshot,
+	formatMeters,
+	formatSizeType,
+	HEIGHT_MOD_MAX_SAMPLE,
+	HEIGHT_MOD_MIN_SAMPLE,
+} from './heightMath'
 import step1Image from '../../../assets/measuringHeightTool/B1.jpg'
 import step2Image from '../../../assets/measuringHeightTool/B2.jpg'
 import step3Image from '../../../assets/measuringHeightTool/B3.jpg'
@@ -156,6 +162,7 @@ export function useMeasuringHeightViewModel() {
 
 	const finalScaleFactor = computed(() => currentSnapshot.value.factor)
 	const sizeType = computed(() => currentSnapshot.value.sizeType)
+	const displaySizeType = computed(() => currentSnapshot.value.displaySizeType)
 	const baseHeightMeters = computed(() => currentSnapshot.value.baseHeight)
 	const currentHeightMeters = computed(() => currentSnapshot.value.height)
 
@@ -166,7 +173,7 @@ export function useMeasuringHeightViewModel() {
 			defaultOpen: true,
 			metrics: [
 				{ id: 'height', label: t('measure.metrics.labels.height'), value: formatMeters(currentHeightMeters.value, 3) },
-				{ id: 'size-type', label: t('measure.metrics.labels.sizeType'), value: `${sizeType.value}` },
+				{ id: 'size-type', label: t('measure.metrics.labels.sizeType'), value: formatSizeType(displaySizeType.value) },
 			],
 		},
 		{
@@ -174,9 +181,9 @@ export function useMeasuringHeightViewModel() {
 			title: t('measure.metrics.extra', 'Thông tin khác'),
 			metrics: [
 				{ id: 'height-max', label: t('measure.metrics.labels.heightMax'), value: formatMeters(maxSnapshot.value.height, 3) },
-				{ id: 'size-type-max', label: t('measure.metrics.labels.sizeTypeMax'), value: `${maxSnapshot.value.sizeType}` },
+				{ id: 'size-type-max', label: t('measure.metrics.labels.sizeTypeMax'), value: formatSizeType(maxSnapshot.value.displaySizeType) },
 				{ id: 'height-min', label: t('measure.metrics.labels.heightMin'), value: formatMeters(minSnapshot.value.height, 3) },
-				{ id: 'size-type-min', label: t('measure.metrics.labels.sizeTypeMin'), value: `${minSnapshot.value.sizeType}` },
+				{ id: 'size-type-min', label: t('measure.metrics.labels.sizeTypeMin'), value: formatSizeType(minSnapshot.value.displaySizeType) },
 			],
 		},
 		{
