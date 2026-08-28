@@ -54,7 +54,7 @@ export function formatMeters(value: number, precision = 2) {
 	return `${value.toFixed(precision)} m`
 }
 
-export function formatSizeType(value: number, precision = 5) {
+export function formatSizeType(value: number, precision = 2) {
 	return value.toFixed(precision)
 }
 

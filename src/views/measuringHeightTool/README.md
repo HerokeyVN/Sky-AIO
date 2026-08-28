@@ -8,6 +8,7 @@ This file documents how the QR Height tool derives its numbers. All logic lives 
 3. **Snapshot**: `computeHeightSnapshot(scale, heightMod)` derives:
    - `factor` (final scale factor)
    - `sizeType` (bucketed body size)
+   - `displaySizeType` (size number displayed in the UI)
    - `baseHeight` (meters, before applying factor)
    - `height` (final meters)
    - `heightDelta` (final - base)
@@ -16,10 +17,10 @@ This file documents how the QR Height tool derives its numbers. All logic lives 
 Constants (dual coefficient sets, chosen by `heightMod` sign):
 ```
 ratioCoefficients (heightMod >= 0)
-   A = 1.095388425
-   B = 0.004983453
-   C = 0.492141518
-   D = 0.002968009
+   A = 1.066904821
+   B = 0.005692821
+   C = 0.492501207
+   D = 0.003192728
 
 ratioCoefficients2 (heightMod < 0)
    A = 1.224206561
@@ -37,6 +38,16 @@ OLD_RAW_MAX = 2
 OLD_SCALE_BUCKETS = 13.5
 RATIO_PER_STEP = (TALLEST_HEIGHT_M / SHORTEST_HEIGHT_M) ^ (1 / (SIZE_TYPE_MAX - 1))
 ```
+
+The coefficients `A`, `B`, `C`, and `D` are regression results from a manually
+collected dataset. Each sample was measured from an in-game screenshot and
+recorded with its corresponding `scale` and `heightMod` values.
+
+The dataset is fitted as two separate regions: `heightMod >= 0` and
+`heightMod < 0`. Testing showed that coefficients fitted from the positive
+region cannot be reliably applied to the negative region, and vice versa;
+cross-applying either set introduces a noticeable height deviation. The model
+therefore selects the coefficient set according to the sign of `heightMod`.
 
 Steps:
 1) **Scale component**
@@ -80,4 +91,21 @@ height = baseHeight * factor
 heightDelta = height - baseHeight
 ```
 
-`formatMeters` simply renders `height` with a fixed precision and `m` suffix.
+7) **Displayed size type**
+```
+hCurve = -0.0652 * heightMod^2 + 3.0729 * heightMod + 35.4599
+scaleFactor = (0.126 * scale + 0.7) / 0.7
+displaySizeType = 42.7508 - hCurve * scaleFactor
+```
+
+The UI displays `displaySizeType` rounded to two decimal places. This value is
+independent of the bucketed `sizeType` used by the meter-height calculation.
+
+The displayed-size model is based on the community research article
+[光遇身高机制解析](https://www.bilibili.com/opus/574075082663246054) by 小骄宝.
+The article derives the scale coefficient `0.126 * scale + 0.7` and proposes the
+general model `height = f(scale = 0, heightMod) * (0.126 * scale + 0.7) / 0.7`.
+It is an empirical community model, not an official formula published by the
+game developer.
+
+`formatMeters` renders `height` with a fixed precision and `m` suffix.
