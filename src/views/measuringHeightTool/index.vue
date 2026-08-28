@@ -165,14 +165,14 @@ async function renderHeightInfoImage() {
 
     ctx.fillStyle = '#f5ecd8'
     ctx.font = '800 66px "Work Sans", "Inter", sans-serif'
-    ctx.fillText(t('measure.image.title'), 76, 124)
+    fitText(ctx, t('measure.image.title'), 76, 124, width - 152)
     ctx.fillStyle = '#c6d3ea'
     ctx.font = '500 30px "Work Sans", "Inter", sans-serif'
     ctx.fillText(t('measure.image.subtitle'), 78, 176)
 
     await drawCharacterPreview(ctx, width)
-    drawHeightGauge(ctx, currentHeightMeters.value, displaySizeType.value)
-    drawMetricCards(ctx, selectedHeightImageMetrics.value)
+    drawHeightGauge(ctx, width, currentHeightMeters.value, displaySizeType.value)
+    drawMetricCards(ctx, width, selectedHeightImageMetrics.value)
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
     ctx.font = '600 24px "Work Sans", "Inter", sans-serif'
@@ -217,32 +217,38 @@ async function drawCharacterPreview(ctx: CanvasRenderingContext2D, width: number
   drawTintedImageBottomAligned(ctx, lamp, centerX - 10, baseline, 450, '#e9f2ff')
 }
 
-function drawHeightGauge(ctx: CanvasRenderingContext2D, heightMeters: number, sizeValue: number) {
-  drawRoundRect(ctx, 76, 735, 928, 170, 30, 'rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.12)')
+function drawHeightGauge(ctx: CanvasRenderingContext2D, width: number, heightMeters: number, sizeValue: number) {
+  const margin = 76
+  const gaugeWidth = width - margin * 2
+  const rightX = width - margin - 40
+
+  drawRoundRect(ctx, margin, 735, gaugeWidth, 170, 30, 'rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.12)')
   ctx.fillStyle = '#aab6d1'
   ctx.font = '700 27px "Work Sans", "Inter", sans-serif'
-  ctx.fillText(t('measure.image.mainMetric'), 116, 790)
+  ctx.fillText(t('measure.image.mainMetric'), margin + 40, 790)
   ctx.fillStyle = '#fff7ed'
   ctx.font = '800 62px "Work Sans", "Inter", sans-serif'
-  ctx.fillText(`${heightMeters.toFixed(3)} m`, 116, 860)
+  ctx.fillText(`${heightMeters.toFixed(3)} m`, margin + 40, 860)
   ctx.textAlign = 'right'
   ctx.fillStyle = '#c6d3ea'
   ctx.font = '700 27px "Work Sans", "Inter", sans-serif'
-  ctx.fillText(t('measure.metrics.labels.sizeType'), 956, 790)
+  ctx.fillText(t('measure.metrics.labels.sizeType'), rightX, 790)
   ctx.fillStyle = '#f5ecd8'
   ctx.font = '800 62px "Work Sans", "Inter", sans-serif'
-  ctx.fillText(sizeValue.toFixed(2), 956, 860)
+  ctx.fillText(sizeValue.toFixed(2), rightX, 860)
   ctx.textAlign = 'left'
 }
 
 function drawMetricCards(
   ctx: CanvasRenderingContext2D,
+  width: number,
   metrics: Array<{ id: string; label: string; value: string }>
 ) {
-  const cardWidth = 447
+  const margin = 76
   const cardHeight = 118
   const gap = 34
-  const startX = 76
+  const cardWidth = (width - margin * 2 - gap) / 2
+  const startX = margin
   const startY = 948
   const rowGap = 26
 
@@ -1295,10 +1301,12 @@ function drawSoftCircle(ctx: CanvasRenderingContext2D, x: number, y: number, rad
   grid-template-columns: minmax(260px, 420px) minmax(260px, 1fr);
   gap: 1.25rem;
   align-items: start;
+  min-width: 0;
 }
 
 .height-image__preview {
   width: 100%;
+  box-sizing: border-box;
   max-height: min(76vh, 720px);
   overflow: auto;
   border-radius: 24px;
@@ -1310,6 +1318,7 @@ function drawSoftCircle(ctx: CanvasRenderingContext2D, x: number, y: number, rad
 .height-image__canvas {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
   border-radius: 18px;
   background: rgba(7, 12, 20, 0.85);
@@ -1319,6 +1328,7 @@ function drawSoftCircle(ctx: CanvasRenderingContext2D, x: number, y: number, rad
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
+  min-width: 0;
 }
 
 .height-image__settings-title {
