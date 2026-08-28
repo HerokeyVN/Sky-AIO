@@ -146,7 +146,7 @@ async function renderHeightInfoImage() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const width = 1080
+    const width = 980
     const height = selectedHeightImageMetrics.value.length > 4 ? 1650 : 1350
     canvas.width = width
     canvas.height = height
@@ -178,7 +178,7 @@ async function renderHeightInfoImage() {
     ctx.font = '600 24px "Work Sans", "Inter", sans-serif'
     ctx.fillText('Sky Tools AIO', 76, height - 30)
     ctx.textAlign = 'right'
-    ctx.fillText('discord.gg/Mu8RS9FZky', width - 76, height - 30)
+    ctx.fillText('herokeyvn.github.io/Sky-AIO/', width - 76, height - 30)
     ctx.textAlign = 'left'
   } finally {
     isRenderingHeightImage.value = false
