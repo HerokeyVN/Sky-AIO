@@ -176,9 +176,9 @@ async function renderHeightInfoImage() {
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
     ctx.font = '600 24px "Work Sans", "Inter", sans-serif'
-    ctx.fillText('Sky Tools AIO', 76, height - 30)
+    fitText(ctx, 'Sky Tools AIO', 76, height - 30, (width - 152) / 2 - 20)
     ctx.textAlign = 'right'
-    ctx.fillText('herokeyvn.github.io/Sky-AIO/', width - 76, height - 30)
+    fitTextRightAligned(ctx, 'herokeyvn.github.io/Sky-AIO', width - 76, height - 30, (width - 152) / 2 - 20)
     ctx.textAlign = 'left'
   } finally {
     isRenderingHeightImage.value = false
@@ -310,6 +310,24 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, x: number, y: numb
     nextText = nextText.slice(0, -1)
   }
   ctx.fillText(`${nextText}...`, x, y)
+}
+
+function fitTextRightAligned(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number
+) {
+  if (ctx.measureText(text).width <= maxWidth) {
+    ctx.fillText(text, x, y)
+    return
+  }
+  let nextText = text
+  while (nextText.length > 1 && ctx.measureText(`...${nextText}`).width > maxWidth) {
+    nextText = nextText.slice(1)
+  }
+  ctx.fillText(`...${nextText}`, x, y)
 }
 
 function drawRoundRect(
