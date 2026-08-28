@@ -59,7 +59,13 @@ export function formatSizeType(value: number, precision = 5) {
 }
 
 export function computeDisplaySizeType(scaleValue: number, heightModValue: number) {
-	return 7.6 - (8.3 * scaleValue) - (3 * heightModValue)
+	const hCurve =
+		-0.0652 * heightModValue * heightModValue +
+		3.0729 * heightModValue +
+		35.4599
+	const scaleFactor = (0.126 * scaleValue + 0.7) / 0.7
+
+	return 42.7508 - hCurve * scaleFactor
 }
 
 function calcFinalFactor(scaleValue: number, heightValue: number) {
