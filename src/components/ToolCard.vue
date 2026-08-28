@@ -115,27 +115,6 @@ const displayCta = computed(() => {
   animation-delay: var(--card-delay, 0ms);
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  inset: -30% auto auto -18%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle at 40% 40%, rgba(255, 214, 152, 0.12), transparent 60%);
-  z-index: 0;
-}
-
-.card::after {
-  content: '';
-  position: absolute;
-  inset: auto -28% -30% auto;
-  width: 220px;
-  height: 200px;
-  background: radial-gradient(circle at 50% 50%, rgba(97, 196, 220, 0.16), transparent 60%);
-  z-index: 0;
-  filter: blur(8px);
-}
-
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 28px 55px rgba(3, 6, 10, 0.75);
