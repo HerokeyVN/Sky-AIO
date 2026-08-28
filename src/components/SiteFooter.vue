@@ -37,7 +37,7 @@ const { t } = useI18n()
       <div class="footer-block">
         <p class="footer-title">{{ t('footer.community') }}</p>
         <nav class="footer-nav">
-          <a href="#" class="footer-link">{{ t('footer.discord') }}</a>
+          <a href="https://discord.gg/Mu8RS9FZky" target="_blank" rel="noopener noreferrer" class="footer-link">{{ t('footer.discord') }}</a>
           <a href="#" class="footer-link">{{ t('footer.facebook') }}</a>
           <a href="mailto:herokey.vn@gmail.com" class="footer-link">{{ t('footer.contact') }}</a>
         </nav>

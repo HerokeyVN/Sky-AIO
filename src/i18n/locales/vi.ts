@@ -143,6 +143,15 @@ export default {
         finalFactor: 'Hệ số cuối',
       },
     },
+    image: {
+      panelTitle: 'Tạo ảnh thông tin',
+      panelDescription: 'Chọn thông tin muốn hiển thị rồi tải ảnh chiều cao của SkyKid.',
+      title: 'Thông tin chiều cao SkyKid',
+      subtitle: 'Tạo bởi Sky Tools AIO',
+      mainMetric: 'Chiều cao hiện tại',
+      fieldsTitle: 'Thông tin hiển thị',
+      download: 'Tải ảnh PNG',
+    },
     respect: {
       title: 'Nguồn tham khảo',
       description:

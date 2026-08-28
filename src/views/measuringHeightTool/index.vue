@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import skyKidRaw from '../../assets/skyKidRaw.png'
 import lampRaw from '../../assets/lampRaw.png'
 import SiteHeader from '../../components/SiteHeader.vue'
@@ -33,6 +33,8 @@ const {
   goToSlide,
   comparisonScale,
   bodyHeightDelta,
+  displaySizeType,
+  currentHeightMeters,
   finalScaleFactor,
   infoSections,
   startNewMeasurement,
@@ -46,6 +48,25 @@ const lampImage = lampRaw
 const openSections = ref<Record<string, boolean>>({})
 const showCameraScanner = ref(false)
 const cameraError = ref('')
+const heightImageCanvas = ref<HTMLCanvasElement | null>(null)
+const selectedHeightImageSectionIds = ref<string[]>(['extra'])
+const isRenderingHeightImage = ref(false)
+
+const heightImageSectionOptions = computed(() =>
+  infoSections.value.map((section) => ({
+    id: section.id,
+    title: section.title,
+    required: section.id === 'basic',
+    selected: section.id === 'basic' || selectedHeightImageSectionIds.value.includes(section.id),
+    metrics: section.metrics,
+  }))
+)
+
+const selectedHeightImageMetrics = computed(() =>
+  heightImageSectionOptions.value
+    .filter((section) => section.selected && section.id !== 'basic')
+    .flatMap((section) => section.metrics)
+)
 
 watch(
   infoSections,
@@ -58,6 +79,15 @@ watch(
     openSections.value = nextState
   },
   { immediate: true }
+)
+
+watch(
+  [hasMeasurement, selectedHeightImageMetrics, finalScaleFactor, currentHeightMeters, displaySizeType],
+  () => {
+    if (!hasMeasurement.value) return
+    void renderHeightInfoImage()
+  },
+  { deep: true, flush: 'post' }
 )
 
 function toggleSection(sectionId: string) {
@@ -95,6 +125,222 @@ function handleStartNewMeasurement() {
   showCameraScanner.value = false
   cameraError.value = ''
   startNewMeasurement()
+}
+
+function toggleHeightImageSection(sectionId: string) {
+  if (sectionId === 'basic') return
+  if (selectedHeightImageSectionIds.value.includes(sectionId)) {
+    selectedHeightImageSectionIds.value = selectedHeightImageSectionIds.value.filter((id) => id !== sectionId)
+    return
+  }
+  selectedHeightImageSectionIds.value = [...selectedHeightImageSectionIds.value, sectionId]
+}
+
+async function renderHeightInfoImage() {
+  await nextTick()
+  const canvas = heightImageCanvas.value
+  if (!canvas) return
+
+  isRenderingHeightImage.value = true
+  try {
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const width = 1080
+    const height = selectedHeightImageMetrics.value.length > 4 ? 1650 : 1350
+    canvas.width = width
+    canvas.height = height
+    ctx.clearRect(0, 0, width, height)
+
+    const gradient = ctx.createLinearGradient(0, 0, width, height)
+    gradient.addColorStop(0, '#13223a')
+    gradient.addColorStop(0.45, '#101928')
+    gradient.addColorStop(1, '#2c1f2a')
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, width, height)
+
+    drawSoftCircle(ctx, 910, 150, 260, 'rgba(255, 194, 135, 0.26)')
+    drawSoftCircle(ctx, 150, 910, 310, 'rgba(105, 190, 255, 0.2)')
+    drawSoftCircle(ctx, 860, 1060, 250, 'rgba(83, 220, 189, 0.18)')
+
+    ctx.fillStyle = '#f5ecd8'
+    ctx.font = '800 66px "Work Sans", "Inter", sans-serif'
+    ctx.fillText(t('measure.image.title'), 76, 124)
+    ctx.fillStyle = '#c6d3ea'
+    ctx.font = '500 30px "Work Sans", "Inter", sans-serif'
+    ctx.fillText(t('measure.image.subtitle'), 78, 176)
+
+    await drawCharacterPreview(ctx, width)
+    drawHeightGauge(ctx, currentHeightMeters.value, displaySizeType.value)
+    drawMetricCards(ctx, selectedHeightImageMetrics.value)
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
+    ctx.font = '600 24px "Work Sans", "Inter", sans-serif'
+    ctx.fillText('Sky Tools AIO', 76, height - 30)
+    ctx.textAlign = 'right'
+    ctx.fillText('discord.gg/Mu8RS9FZky', width - 76, height - 30)
+    ctx.textAlign = 'left'
+  } finally {
+    isRenderingHeightImage.value = false
+  }
+}
+
+async function downloadHeightInfoImage() {
+  await renderHeightInfoImage()
+  const canvas = heightImageCanvas.value
+  if (!canvas) return
+
+  const link = document.createElement('a')
+  link.href = canvas.toDataURL('image/png')
+  link.download = 'skykid-height-info.png'
+  link.click()
+}
+
+async function drawCharacterPreview(ctx: CanvasRenderingContext2D, width: number) {
+  const [skyKid, lamp] = await Promise.all([loadImage(skyKidImage), loadImage(lampImage)])
+  const baseline = 690
+  const centerX = width / 2
+
+  ctx.save()
+  ctx.globalAlpha = 0.35
+  ctx.fillStyle = '#000'
+  ctx.filter = 'blur(18px)'
+  ctx.beginPath()
+  ctx.ellipse(centerX - 70, baseline + 26, 150, 36, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(centerX + 150, baseline + 26, 130, 30, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+
+  drawTintedImageBottomAligned(ctx, skyKid, centerX - 145, baseline, 450 * finalScaleFactor.value * 0.7, '#f6ecd9')
+  drawTintedImageBottomAligned(ctx, lamp, centerX - 10, baseline, 450, '#e9f2ff')
+}
+
+function drawHeightGauge(ctx: CanvasRenderingContext2D, heightMeters: number, sizeValue: number) {
+  drawRoundRect(ctx, 76, 735, 928, 170, 30, 'rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.12)')
+  ctx.fillStyle = '#aab6d1'
+  ctx.font = '700 27px "Work Sans", "Inter", sans-serif'
+  ctx.fillText(t('measure.image.mainMetric'), 116, 790)
+  ctx.fillStyle = '#fff7ed'
+  ctx.font = '800 62px "Work Sans", "Inter", sans-serif'
+  ctx.fillText(`${heightMeters.toFixed(3)} m`, 116, 860)
+  ctx.textAlign = 'right'
+  ctx.fillStyle = '#c6d3ea'
+  ctx.font = '700 27px "Work Sans", "Inter", sans-serif'
+  ctx.fillText(t('measure.metrics.labels.sizeType'), 956, 790)
+  ctx.fillStyle = '#f5ecd8'
+  ctx.font = '800 62px "Work Sans", "Inter", sans-serif'
+  ctx.fillText(sizeValue.toFixed(2), 956, 860)
+  ctx.textAlign = 'left'
+}
+
+function drawMetricCards(
+  ctx: CanvasRenderingContext2D,
+  metrics: Array<{ id: string; label: string; value: string }>
+) {
+  const cardWidth = 447
+  const cardHeight = 118
+  const gap = 34
+  const startX = 76
+  const startY = 948
+  const rowGap = 26
+
+  metrics.slice(0, 8).forEach((metric, index) => {
+    const column = index % 2
+    const row = Math.floor(index / 2)
+    const x = startX + column * (cardWidth + gap)
+    const y = startY + row * (cardHeight + rowGap)
+    drawRoundRect(ctx, x, y, cardWidth, cardHeight, 24, 'rgba(8, 14, 24, 0.58)', 'rgba(255, 255, 255, 0.1)')
+    ctx.fillStyle = '#aab6d1'
+    ctx.font = '700 22px "Work Sans", "Inter", sans-serif'
+    ctx.fillText(metric.label, x + 24, y + 42)
+    ctx.fillStyle = '#fff7ed'
+    ctx.font = '800 34px "Work Sans", "Inter", sans-serif'
+    fitText(ctx, metric.value, x + 24, y + 86, cardWidth - 48)
+  })
+}
+
+function drawTintedImageBottomAligned(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  bottomY: number,
+  targetHeight: number,
+  tint: string
+) {
+  const targetWidth = targetHeight * (image.naturalWidth / image.naturalHeight)
+  const tintedImage = createTintedImage(image, tint)
+  ctx.save()
+  ctx.filter = 'drop-shadow(0 22px 32px rgba(0, 0, 0, 0.5))'
+  ctx.drawImage(tintedImage, x, bottomY - targetHeight, targetWidth, targetHeight)
+  ctx.restore()
+}
+
+function createTintedImage(image: HTMLImageElement, tint: string) {
+  const buffer = document.createElement('canvas')
+  buffer.width = image.naturalWidth
+  buffer.height = image.naturalHeight
+  const bufferCtx = buffer.getContext('2d')
+  if (!bufferCtx) return image
+
+  bufferCtx.drawImage(image, 0, 0)
+  bufferCtx.globalCompositeOperation = 'source-in'
+  bufferCtx.fillStyle = tint
+  bufferCtx.fillRect(0, 0, buffer.width, buffer.height)
+  return buffer
+}
+
+function loadImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.onerror = reject
+    image.src = src
+  })
+}
+
+function fitText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number) {
+  if (ctx.measureText(text).width <= maxWidth) {
+    ctx.fillText(text, x, y)
+    return
+  }
+  let nextText = text
+  while (nextText.length > 1 && ctx.measureText(`${nextText}...`).width > maxWidth) {
+    nextText = nextText.slice(0, -1)
+  }
+  ctx.fillText(`${nextText}...`, x, y)
+}
+
+function drawRoundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+  fill: string,
+  stroke?: string
+) {
+  ctx.beginPath()
+  ctx.roundRect(x, y, width, height, radius)
+  ctx.fillStyle = fill
+  ctx.fill()
+  if (stroke) {
+    ctx.strokeStyle = stroke
+    ctx.lineWidth = 2
+    ctx.stroke()
+  }
+}
+
+function drawSoftCircle(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string) {
+  const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius)
+  gradient.addColorStop(0, color)
+  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)')
+  ctx.fillStyle = gradient
+  ctx.beginPath()
+  ctx.arc(x, y, radius, 0, Math.PI * 2)
+  ctx.fill()
 }
 </script>
 
@@ -328,6 +574,52 @@ function handleStartNewMeasurement() {
               </ul>
             </div>
           </section>
+        </div>
+      </section>
+
+      <section class="panel height-image" id="height-image">
+        <header class="panel__header">
+          <div>
+            <h2>{{ t('measure.image.panelTitle') }}</h2>
+            <p class="panel__lede">{{ t('measure.image.panelDescription') }}</p>
+          </div>
+        </header>
+
+        <div class="height-image__body">
+          <div class="height-image__preview">
+            <canvas ref="heightImageCanvas" class="height-image__canvas"></canvas>
+          </div>
+
+          <div class="height-image__settings">
+            <p class="height-image__settings-title">{{ t('measure.image.fieldsTitle') }}</p>
+            <div class="height-image__options">
+              <label
+                v-for="section in heightImageSectionOptions"
+                :key="section.id"
+                class="height-image__option"
+                :class="{ 'height-image__option--required': section.required }"
+              >
+                <input
+                  type="checkbox"
+                  :checked="section.selected"
+                  :disabled="section.required"
+                  @change="toggleHeightImageSection(section.id)"
+                />
+                <span>
+                  <strong>{{ section.title }}</strong>
+                  <small>{{ section.metrics.map((metric) => metric.label).join(', ') }}</small>
+                </span>
+              </label>
+            </div>
+            <SkyGhostButton
+              icon="bi-download"
+              block
+              :disabled="isRenderingHeightImage"
+              @click="downloadHeightInfoImage"
+            >
+              {{ t('measure.image.download') }}
+            </SkyGhostButton>
+          </div>
         </div>
       </section>
     </div>
@@ -757,8 +1049,9 @@ function handleStartNewMeasurement() {
 
 .panel-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: minmax(320px, 0.95fr) minmax(360px, 1.05fr);
   gap: 1.5rem;
+  align-items: start;
 }
 
 .measurement-actions {
@@ -975,6 +1268,106 @@ function handleStartNewMeasurement() {
   color: #fff7ed;
 }
 
+.height-image {
+  grid-column: 1 / -1;
+}
+
+.height-image__body {
+  display: grid;
+  grid-template-columns: minmax(260px, 420px) minmax(260px, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.height-image__preview {
+  width: 100%;
+  max-height: min(76vh, 720px);
+  overflow: auto;
+  border-radius: 24px;
+  padding: 0.7rem;
+  background: rgba(8, 14, 24, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.height-image__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  background: rgba(7, 12, 20, 0.85);
+}
+
+.height-image__settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.height-image__settings-title {
+  margin: 0;
+  color: #f5f7ff;
+  font-weight: 700;
+}
+
+.height-image__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.7rem;
+}
+
+.height-image__option {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 68px;
+  padding: 0.75rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.height-image__option--required {
+  cursor: default;
+  border-color: rgba(139, 213, 255, 0.26);
+  background: rgba(139, 213, 255, 0.08);
+}
+
+.height-image__option input {
+  width: 18px;
+  height: 18px;
+  accent-color: #8bd5ff;
+}
+
+.height-image__option input:disabled {
+  cursor: not-allowed;
+}
+
+.height-image__option span {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.height-image__option strong,
+.height-image__option small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.height-image__option strong {
+  color: #f5f7ff;
+  font-size: 0.92rem;
+}
+
+.height-image__option small {
+  color: #aab6d1;
+  font-weight: 700;
+}
+
 .respect {
   align-self: stretch;
 }
@@ -1021,12 +1414,24 @@ function handleStartNewMeasurement() {
     padding: 1rem;
   }
 
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
+
   .panel {
     padding: 1rem;
   }
 
   .upload__grid {
     grid-template-columns: 1fr;
+  }
+
+  .height-image__body {
+    grid-template-columns: 1fr;
+  }
+
+  .height-image__preview {
+    max-height: 70vh;
   }
 
   .slide__image {

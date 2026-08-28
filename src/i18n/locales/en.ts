@@ -143,6 +143,15 @@ export default {
         finalFactor: 'Final factor',
       },
     },
+    image: {
+      panelTitle: 'Create info image',
+      panelDescription: 'Choose the fields to show, then download a SkyKid height image.',
+      title: 'SkyKid Height Info',
+      subtitle: 'Created by Sky Tools AIO',
+      mainMetric: 'Current height',
+      fieldsTitle: 'Visible fields',
+      download: 'Download PNG',
+    },
     respect: {
       title: 'Credits',
       description:
